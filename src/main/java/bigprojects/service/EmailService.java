@@ -85,4 +85,23 @@ public class EmailService {
         otpStore.entrySet().removeIf(entry -> System.currentTimeMillis() > entry.getValue().expiryTime);
     }
 
+    public void sendResetLink(String toEmail, String resetLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject("Password Reset Request");
+            helper.setText(
+                    "<h3>Reset Your Password</h3>"
+                            + "<p>Click the link below to reset your password:</p>"
+                            + "<a href='" + resetLink + "'>Reset Password</a>",
+                    true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
+    }
+
 }
